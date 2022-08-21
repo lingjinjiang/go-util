@@ -50,7 +50,7 @@ func buildHeaderAndData[T any](objs []T, instead map[string]string, ignores []st
 	if len(ignores) > 0 {
 		for _, ignore := range ignores {
 			index := headerIndex[ignore]
-			if index > 0 {
+			if index >= 0 {
 				ignoreIndex[index] = true
 			}
 		}

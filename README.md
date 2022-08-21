@@ -1,37 +1,120 @@
 A golang util collection for myself
 
-* [PrintTable](#printtable)
+* table
+	- [Print](#print)
+	- [Printf](#printf)
 
-## PrintTable
+## Print
+
+Print data in table format, it will defaultly ignore the private field.
 
 ```golang
-func PrintTable[T interface{}](data []T) error
+func Print[T interface{}](data []T) error
 ```
-Print data in table format
 
 Example
 ```golang
+import "github.com/lingjinjiang/goutil/table"
+
 type Data struct {
-	A string
-	B string
-	C string
+	AA string
+	BB string
+	CC string
+	dd string
 }
 
 func main() {
-	d1 := Data{"1", "2", "3"}
-	d2 := Data{"4", "5", "6"}
-	data := []Data{d1, d2}
-
-	PrintTable(data)
+	var data []Data = []Data{
+		{AA: "aaa", BB: "bbb", dd: "ddd"},
+		{"111", "222", "333", "444"},
+	}
+	table.Print(data)
 }
 
 ```
 The result will be like below
 ```
-+---+---+---+
-| A | B | C |
-+---+---+---+
-| 1 | 2 | 3 |
-| 4 | 5 | 6 |
-+---+---+---+
++-----+-----+-----+
+| AA  | BB  | CC  |
++-----+-----+-----+
+| aaa | bbb |     |
+| 111 | 222 | 333 |
++-----+-----+-----+
+```
+
+## Printf
+
+Print data in table format. You can use custom headers instead of defaults, or ignore given columns
+
+```golang
+func Printf[T any](objs []T, instead map[string]string, ignores []string) error
+```
+
+Example
+```golang
+import (
+	"fmt"
+	"github.com/lingjinjiang/goutil/table"
+)
+
+type Data struct {
+	AA string
+	BB string
+	CC string
+	dd string
+}
+
+func main() {
+	var data []Data = []Data{
+		{AA: "aaa", BB: "bbb", dd: "ddd"},
+		{"111", "222", "333", "444"},
+	}
+
+	instead := make(map[string]string)
+	instead["BB"] = "hello"
+
+	ignore := []string{"CC"}
+
+	fmt.Println("======= with instead and ignore")
+	table.Printf(data, instead, ignore)
+	fmt.Println("======= with instead")
+	table.Printf(data, instead, nil)
+	fmt.Println("======= with ignore")
+	table.Printf(data, nil, ignore)
+	fmt.Println("======= without instead or ignore")
+	table.Printf(data, nil, nil)
+}
+
+```
+
+The result will be like below
+```
+======= with instead and ignore
++-----+-------+-----+
+| AA  | HELLO | DD  |
++-----+-------+-----+
+| aaa | bbb   | ddd |
+| 111 |   222 | 444 |
++-----+-------+-----+
+======= with instead
++-----+-------+-----+-----+
+| AA  | HELLO | CC  | DD  |
++-----+-------+-----+-----+
+| aaa | bbb   |     | ddd |
+| 111 |   222 | 333 | 444 |
++-----+-------+-----+-----+
+======= with ignore
++-----+-----+-----+
+| AA  | BB  | DD  |
++-----+-----+-----+
+| aaa | bbb | ddd |
+| 111 | 222 | 444 |
++-----+-----+-----+
+======= without instead or ignore
++-----+-----+-----+-----+
+| AA  | BB  | CC  | DD  |
++-----+-----+-----+-----+
+| aaa | bbb |     | ddd |
+| 111 | 222 | 333 | 444 |
++-----+-----+-----+-----+
 ```

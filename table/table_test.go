@@ -12,25 +12,31 @@ type Data struct {
 	dd string
 }
 
-var data []Data = []Data{
-	{BB: "bbb", AA: "aaa", dd: "DDD"},
-	{"111", "a222", "333", "444"}}
-
 func TestPrint(t *testing.T) {
+	var data []Data = []Data{
+		{AA: "aaa", BB: "bbb", dd: "ddd"},
+		{"111", "222", "333", "444"},
+	}
 	Print(data)
 }
 
 func TestPrintf(t *testing.T) {
+	var data []Data = []Data{
+		{AA: "aaa", BB: "bbb", dd: "ddd"},
+		{"111", "222", "333", "444"},
+	}
+
 	instead := make(map[string]string)
 	instead["BB"] = "hello"
+
 	ignore := []string{"CC"}
 
-	fmt.Println("======= common")
+	fmt.Println("======= with instead and ignore")
 	Printf(data, instead, ignore)
-	fmt.Println("======= nil ignore")
+	fmt.Println("======= with instead")
 	Printf(data, instead, nil)
-	fmt.Println("======= nil instead")
+	fmt.Println("======= with ignore")
 	Printf(data, nil, ignore)
-	fmt.Println("======= nil instead and ignore")
+	fmt.Println("======= without instead or ignore")
 	Printf(data, nil, nil)
 }

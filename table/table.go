@@ -2,6 +2,7 @@ package table
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"reflect"
 
@@ -78,7 +79,7 @@ func buildHeaderAndData[T any](objs []T, instead map[string]string, ignores []st
 			if ignoreIndex[i] {
 				continue
 			}
-			row = append(row, values.Field(i).String())
+			row = append(row, fmt.Sprint(values.Field(i)))
 		}
 		data = append(data, row)
 	}

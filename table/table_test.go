@@ -7,24 +7,23 @@ import (
 
 type Data struct {
 	AA string
-	BB string
-	CC string
+	BB int
+	CC bool
 	dd string
+	EE float32
+}
+
+var data []Data = []Data{
+	{AA: "aaa", BB: 111, CC: false, dd: "ddd", EE: 12.34},
+	{"111", 222, true, "444", 1.23},
 }
 
 func TestPrint(t *testing.T) {
-	var data []Data = []Data{
-		{AA: "aaa", BB: "bbb", dd: "ddd"},
-		{"111", "222", "333", "444"},
-	}
+
 	Print(data)
 }
 
 func TestPrintf(t *testing.T) {
-	var data []Data = []Data{
-		{AA: "aaa", BB: "bbb", dd: "ddd"},
-		{"111", "222", "333", "444"},
-	}
 
 	instead := make(map[string]string)
 	instead["BB"] = "hello"

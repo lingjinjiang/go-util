@@ -39,3 +39,9 @@ func TestPrintf(t *testing.T) {
 	fmt.Println("======= without instead or ignore")
 	Printf(data, nil, nil)
 }
+
+func TestBuildTable(t *testing.T) {
+	tab := NewTable(data)
+	tab.ShowSchema()
+	tab.Show()
+}

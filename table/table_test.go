@@ -45,3 +45,9 @@ func TestBuildTable(t *testing.T) {
 	tab.ShowSchema()
 	tab.Show()
 }
+
+func TestSelect(t *testing.T) {
+	tab := NewTable(data)
+	tab2 := tab.Select("AA", "dd")
+	tab2.Show()
+}

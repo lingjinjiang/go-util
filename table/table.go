@@ -162,3 +162,16 @@ func (tab *Table) Show() {
 
 	print(header, data)
 }
+
+func (tab *Table) Select(cols ...string) Table {
+
+	columes := make(map[string]*colume)
+	for _, cName := range cols {
+		col := tab.columes[cName]
+		if col != nil {
+			columes[cName] = col
+		}
+	}
+
+	return Table{columes: columes}
+}

@@ -13,13 +13,17 @@ type Data struct {
 	EE float32
 }
 
+type Ext struct {
+	AA string
+	BB int
+}
+
 var data []Data = []Data{
 	{AA: "aaa", BB: 111, CC: false, dd: "ddd", EE: 12.34},
 	{"111", 222, true, "444", 1.23},
 }
 
 func TestPrint(t *testing.T) {
-
 	Print(data)
 }
 
@@ -50,4 +54,14 @@ func TestSelect(t *testing.T) {
 	tab := NewTable(data)
 	tab2 := tab.Select("AA", "dd")
 	tab2.Show()
+}
+
+func TestSave(t *testing.T) {
+	tab := NewTable(data)
+	tab = tab.Select("AA", "BB")
+	var ext []Ext
+	tab.Save(&ext)
+	for _, e := range ext {
+		fmt.Println(e.AA, e.BB)
+	}
 }

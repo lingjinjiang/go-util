@@ -10,6 +10,7 @@ import (
 )
 
 type Table struct {
+	size    int
 	columes map[string]*colume
 }
 
@@ -136,7 +137,7 @@ func NewTable[T any](objs []T) Table {
 		}
 	}
 
-	return Table{columes: columes}
+	return Table{columes: columes, size: len(objs)}
 }
 
 func (tab *Table) ShowSchema() {
@@ -164,14 +165,37 @@ func (tab *Table) Show() {
 }
 
 func (tab *Table) Select(cols ...string) Table {
-
+	size := 0
 	columes := make(map[string]*colume)
 	for _, cName := range cols {
 		col := tab.columes[cName]
 		if col != nil {
 			columes[cName] = col
+			size++
 		}
 	}
 
-	return Table{columes: columes}
+	return Table{columes: columes, size: size}
+}
+
+func (tab *Table) Save(v any) error {
+	rv := reflect.ValueOf(v)
+	if rv.Kind() != reflect.Pointer || rv.IsNil() {
+		return fmt.Errorf("should be a pointer slice")
+	}
+	elem := rv.Elem()
+	if elem.Kind() != reflect.Slice {
+		return fmt.Errorf("should be a pointer slice")
+	}
+
+	newv := reflect.MakeSlice(elem.Type(), tab.size, tab.size)
+	for i := 0; i < tab.size; i++ {
+		n := newv.Index(i)
+		for cName, cData := range tab.columes {
+			tmp := n.FieldByName(cName)
+			tmp.Set((*cData).Data[i])
+		}
+	}
+	elem.Set(newv)
+	return nil
 }

@@ -1,11 +1,12 @@
 package table
 
 import (
-	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-type Data struct {
+type ExampleData1 struct {
 	AA string
 	BB int
 	CC bool
@@ -13,55 +14,58 @@ type Data struct {
 	EE float32
 }
 
-type Ext struct {
+type ExampleData2 struct {
 	AA string
 	BB int
 }
 
-var data []Data = []Data{
+var data []ExampleData1 = []ExampleData1{
 	{AA: "aaa", BB: 111, CC: false, dd: "ddd", EE: 12.34},
 	{"111", 222, true, "444", 1.23},
 }
 
-func TestPrint(t *testing.T) {
-	Print(data)
-}
-
-func TestPrintf(t *testing.T) {
-
-	instead := make(map[string]string)
-	instead["BB"] = "hello"
-
-	ignore := []string{"CC"}
-
-	fmt.Println("======= with instead and ignore")
-	Printf(data, instead, ignore)
-	fmt.Println("======= with instead")
-	Printf(data, instead, nil)
-	fmt.Println("======= with ignore")
-	Printf(data, nil, ignore)
-	fmt.Println("======= without instead or ignore")
-	Printf(data, nil, nil)
-}
-
 func TestBuildTable(t *testing.T) {
 	tab := NewTable(data)
+	assert.Equal(t, 4, len(tab.columes))
+	assert.Equal(t, 2, tab.size)
+	assert.NotNil(t, tab.columes["AA"])
+	assert.NotNil(t, tab.columes["BB"])
+	assert.NotNil(t, tab.columes["CC"])
+	assert.NotNil(t, tab.columes["EE"])
+	assert.Nil(t, tab.columes["dd"])
 	tab.ShowSchema()
 	tab.Show()
 }
 
 func TestSelect(t *testing.T) {
-	tab := NewTable(data)
-	tab2 := tab.Select("AA", "dd")
-	tab2.Show()
+	tab := NewTable(data).Select("AA", "BB")
+	assert.Equal(t, 2, len(tab.columes))
+	assert.Equal(t, 2, tab.size)
+	assert.NotNil(t, tab.columes["AA"])
+	assert.NotNil(t, tab.columes["BB"])
+	assert.Nil(t, tab.columes["CC"])
+	assert.Nil(t, tab.columes["EE"])
+	assert.Nil(t, tab.columes["dd"])
 }
 
-func TestSave(t *testing.T) {
-	tab := NewTable(data)
-	tab = tab.Select("AA", "BB")
-	var ext []Ext
-	tab.Save(&ext)
-	for _, e := range ext {
-		fmt.Println(e.AA, e.BB)
-	}
+func TestUnmarshal(t *testing.T) {
+	tab := NewTable(data).Select("AA", "BB")
+	var results []ExampleData2
+	tab.Unmarshal(&results)
+	assert.Equal(t, 2, len(results))
+	assert.Equal(t, data[0].AA, results[0].AA)
+	assert.Equal(t, data[0].BB, results[0].BB)
+	assert.Equal(t, data[1].AA, results[1].AA)
+	assert.Equal(t, data[1].BB, results[1].BB)
+}
+
+func TestEqual(t *testing.T) {
+	tab := NewTable(data).Where(Equal{Colume: "BB", Value: 111})
+	var results []ExampleData1
+	tab.Unmarshal(&results)
+	assert.Equal(t, 1, len(results))
+	assert.Equal(t, data[0].AA, results[0].AA)
+	assert.Equal(t, data[0].BB, results[0].BB)
+	assert.Equal(t, data[0].CC, results[0].CC)
+	assert.Equal(t, data[0].EE, results[0].EE)
 }

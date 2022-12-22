@@ -18,10 +18,6 @@ type colume struct {
 	Data []reflect.Value
 }
 
-func print(headers []string, data [][]string) error {
-	return nil
-}
-
 func NewTable[T any](objs []T) Table {
 	o := objs[0]
 	objType := reflect.TypeOf(o)

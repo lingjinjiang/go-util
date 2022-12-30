@@ -60,7 +60,8 @@ func TestUnmarshal(t *testing.T) {
 }
 
 func TestEqual(t *testing.T) {
-	tab := NewTable(data).Where(Equal{Colume: "BB", Value: 111})
+	tab := NewTable(data).Where(Equal{Condition{Colume: "BB", Value: 111}})
+	tab.Show()
 	var results []ExampleData1
 	tab.Unmarshal(&results)
 	assert.Equal(t, 1, len(results))

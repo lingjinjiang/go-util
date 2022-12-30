@@ -2,6 +2,7 @@ package table
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 
 	"github.com/lingjinjiang/goutil/common"
@@ -88,8 +89,42 @@ func (tab Table) Select(cols ...string) Table {
 	return Table{columes: columes, size: tab.size}
 }
 
-func (tab Table) Where(op Operation) Table {
-	return op.Do(&tab)
+func (tab Table) Where(c condition) Table {
+	rows := findRow(c, tab.columes[c.getColume()])
+	if rows == nil {
+		return Table{}
+	}
+	columes := make(map[string]*colume)
+	for i := range rows {
+		for name, col := range tab.columes {
+			newCol := columes[name]
+			if newCol == nil {
+				newCol = &colume{Name: col.Name, Type: col.Type, Data: make([]reflect.Value, 0)}
+				columes[name] = newCol
+			}
+			newCol.Data = append(newCol.Data, col.Data[i])
+		}
+	}
+	return Table{len(rows), columes}
+}
+
+func findRow(c condition, col *colume) []int {
+	if col == nil {
+		log.Printf("The table doesn't contain colume named '%s'", c.getColume())
+		return nil
+	}
+	vType := reflect.TypeOf(c.getValue())
+	if vType != col.Type {
+		log.Printf("The value's type '%s' doesn't match colume's type '%s'", vType.Name(), col.Type.Name())
+		return nil
+	}
+	rows := make([]int, 0)
+	for i, value := range col.Data {
+		if c.evaluate(value.Interface()) {
+			rows = append(rows, i)
+		}
+	}
+	return rows
 }
 
 func (tab Table) Unmarshal(v any) error {
